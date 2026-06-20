@@ -48,7 +48,7 @@ async function HistoryTable({
         title="Lịch sử bán hàng"
         description="Tổng quan các giao dịch đã thanh toán"
       />
-      <div className="flex-1 p-6 space-y-4">
+      <div className="flex-1 p-6 flex flex-col overflow-hidden">
         <HistoryContent
           data={data}
           total={total}
@@ -66,10 +66,10 @@ export default function HistoryPage(props: PageProps) {
       fallback={
         <>
           <Header title="Lịch sử bán hàng" description="Đang tải dữ liệu..." />
-          <div className="flex-1 p-6 space-y-4">
-            <div className="animate-pulse space-y-4">
-              <div className="h-10 bg-muted rounded-xl w-full" />
-              <div className="h-[400px] bg-muted rounded-xl w-full" />
+          <div className="flex-1 p-6 flex flex-col overflow-hidden">
+            <div className="animate-pulse flex flex-col gap-4">
+              <div className="h-10 bg-muted rounded-xl w-full shrink-0" />
+              <div className="flex-1 bg-muted rounded-xl w-full" />
             </div>
           </div>
         </>

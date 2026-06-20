@@ -38,6 +38,7 @@ interface DataTableProps<TData, TValue> {
   pageSize: number;
   onPageChange: (page: number) => void;
   loading?: boolean;
+  scrollable?: boolean; // new: enable scrollable tbody with sticky header
 }
 
 export function DataTable<TData, TValue>({
@@ -48,6 +49,7 @@ export function DataTable<TData, TValue>({
   pageSize,
   onPageChange,
   loading = false,
+  scrollable = false,
 }: DataTableProps<TData, TValue>) {
   const totalPages = Math.ceil(total / pageSize);
 
@@ -64,10 +66,10 @@ export function DataTable<TData, TValue>({
     },
   });
 
-  return (
-    <div className="space-y-4">
+  const tableContent = (
+    <>
       {/* Toolbar */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-shrink-0">
         <p className="text-sm text-muted-foreground">
           Tổng số: <span className="font-medium">{total}</span> giao dịch
         </p>
@@ -109,71 +111,137 @@ export function DataTable<TData, TValue>({
       </div>
 
       {/* Table */}
-      <div className="rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    className="bg-slate-50 dark:bg-slate-900/50 font-medium text-xs uppercase tracking-wider"
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </TableHead>
+      {scrollable ? (
+        <div className="flex-1 min-h-0 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+          <div className="h-full overflow-auto">
+            <Table>
+              <TableHeader className="sticky top-0 z-10 bg-card">
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <TableHead
+                        key={header.id}
+                        className="bg-slate-50 dark:bg-slate-900/50 font-medium text-xs uppercase tracking-wider"
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                      </TableHead>
+                    ))}
+                  </TableRow>
                 ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {loading ? (
-              [...Array(pageSize)].map((_, i) => (
-                <TableRow key={i}>
-                  {columns.map((col, j) => (
-                    <TableCell key={j}>
-                      <Skeleton className="h-5 w-full" />
+              </TableHeader>
+              <TableBody>
+                {loading ? (
+                  [...Array(pageSize)].map((_, i) => (
+                    <TableRow key={i}>
+                      {columns.map((col, j) => (
+                        <TableCell key={j}>
+                          <Skeleton className="h-5 w-full" />
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center text-muted-foreground"
+                    >
+                      Không có dữ liệu
                     </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+      ) : (
+        <div className="rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead
+                      key={header.id}
+                      className="bg-slate-50 dark:bg-slate-900/50 font-medium text-xs uppercase tracking-wider"
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                    </TableHead>
                   ))}
                 </TableRow>
-              ))
-            ) : table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
+              ))}
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                [...Array(pageSize)].map((_, i) => (
+                  <TableRow key={i}>
+                    {columns.map((col, j) => (
+                      <TableCell key={j}>
+                        <Skeleton className="h-5 w-full" />
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center text-muted-foreground"
+                  >
+                    Không có dữ liệu
+                  </TableCell>
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center text-muted-foreground"
-                >
-                  Không có dữ liệu
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      )}
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-shrink-0">
           <p className="text-sm text-muted-foreground">
             Trang {page} / {totalPages}
           </p>
@@ -220,6 +288,20 @@ export function DataTable<TData, TValue>({
           </div>
         </div>
       )}
+    </>
+  );
+
+  if (scrollable) {
+    return (
+      <div className="flex flex-col h-full gap-4">
+        {tableContent}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {tableContent}
     </div>
   );
 }

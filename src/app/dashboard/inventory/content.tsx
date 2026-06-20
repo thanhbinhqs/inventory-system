@@ -55,6 +55,7 @@ export function InventoryContent({
         page={data.page}
         pageSize={data.pageSize}
         onPageChange={handlePageChange}
+        scrollable
       />
     </div>
   );

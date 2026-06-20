@@ -46,20 +46,20 @@ export function HistoryContent({
   }
 
   return (
-    <div className="space-y-4">
-      {/* Summary */}
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+    <div className="flex flex-col h-full gap-4">
+      {/* Summary bar */}
+      <div className="flex items-center gap-2 text-sm text-muted-foreground flex-shrink-0">
         <ShoppingCart className="w-4 h-4" />
         <span>
           Tổng số: <strong className="text-foreground">{total}</strong> giao dịch bán
         </span>
       </div>
 
-      {/* Table */}
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
-        <div className="overflow-x-auto">
+      {/* Scrollable Table */}
+      <div className="flex-1 min-h-0 rounded-xl border border-border bg-card overflow-hidden">
+        <div className="h-full overflow-auto">
           <table className="w-full">
-            <thead>
+            <thead className="sticky top-0 z-10 bg-card">
               <tr className="border-b border-border bg-muted/30">
                 <th className="text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3 whitespace-nowrap">
                   Thời gian
@@ -121,7 +121,7 @@ export function HistoryContent({
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-shrink-0">
           <p className="text-sm text-muted-foreground">
             Trang {page} / {totalPages}
           </p>

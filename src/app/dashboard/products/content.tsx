@@ -313,9 +313,9 @@ export function ProductsContent({ products }: ProductsContentProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col h-full gap-4">
       {/* Toolbar */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-4 flex-shrink-0">
         <div className="relative max-w-sm flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
@@ -331,88 +331,90 @@ export function ProductsContent({ products }: ProductsContentProps) {
         </Button>
       </div>
 
-      {/* Table */}
+      {/* Table area */}
       {products.length === 0 ? (
         <EmptyState />
       ) : (
         <>
-          <div className="rounded-xl border border-border bg-card overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[50px]">STT</TableHead>
-                  <TableHead>Mã SP</TableHead>
-                  <TableHead>Tên sản phẩm</TableHead>
-                  <TableHead className="text-right">Giá vốn</TableHead>
-                  <TableHead className="text-right">Giá bán</TableHead>
-                  <TableHead className="text-right">Tồn tối thiểu</TableHead>
-                  <TableHead className="w-[160px] text-right">Thao tác</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filtered.map((product, i) => (
-                  <TableRow key={product.id}>
-                    <TableCell className="text-muted-foreground text-sm">
-                      {i + 1}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className="font-mono text-xs">
-                        {product.sku}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="font-medium">{product.name}</TableCell>
-                    <TableCell className="text-right tabular-nums">
-                      {formatCurrency(product.cost_price)}
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums">
-                      {formatCurrency(product.selling_price)}
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums">
-                      <Badge
-                        variant={product.min_stock > 0 ? "outline" : "secondary"}
-                        className="font-mono"
-                      >
-                        {product.min_stock}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center justify-end gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-950/30"
-                          onClick={() => router.push("/dashboard/stock-in")}
-                          title="Nhập kho"
-                        >
-                          <ArrowDownToLine className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => setEditProduct(product)}
-                          title="Sửa"
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
-                          onClick={() => setDeleteTarget(product)}
-                          title="Xóa"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
+          <div className="flex-1 min-h-0 rounded-xl border border-border bg-card overflow-hidden">
+            <div className="h-full overflow-auto">
+              <Table>
+                <TableHeader className="sticky top-0 z-10 bg-card">
+                  <TableRow>
+                    <TableHead className="w-[50px]">STT</TableHead>
+                    <TableHead>Mã SP</TableHead>
+                    <TableHead>Tên sản phẩm</TableHead>
+                    <TableHead className="text-right">Giá vốn</TableHead>
+                    <TableHead className="text-right">Giá bán</TableHead>
+                    <TableHead className="text-right">Tồn tối thiểu</TableHead>
+                    <TableHead className="w-[160px] text-right">Thao tác</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {filtered.map((product, i) => (
+                    <TableRow key={product.id}>
+                      <TableCell className="text-muted-foreground text-sm">
+                        {i + 1}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="font-mono text-xs">
+                          {product.sku}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="font-medium">{product.name}</TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {formatCurrency(product.cost_price)}
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {formatCurrency(product.selling_price)}
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        <Badge
+                          variant={product.min_stock > 0 ? "outline" : "secondary"}
+                          className="font-mono"
+                        >
+                          {product.min_stock}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center justify-end gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-950/30"
+                            onClick={() => router.push("/dashboard/stock-in")}
+                            title="Nhập kho"
+                          >
+                            <ArrowDownToLine className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => setEditProduct(product)}
+                            title="Sửa"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
+                            onClick={() => setDeleteTarget(product)}
+                            title="Xóa"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </div>
 
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground flex-shrink-0">
             Tổng số: {filtered.length} / {products.length} sản phẩm
           </p>
         </>

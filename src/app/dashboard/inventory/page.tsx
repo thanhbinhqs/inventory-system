@@ -111,7 +111,7 @@ async function InventoryTable({
         description="Quản lý nhập xuất tồn kho"
         actions={<NewTransactionDialog products={products} />}
       />
-      <div className="flex-1 p-6 space-y-4">
+      <div className="flex-1 p-6 flex flex-col overflow-hidden">
         <InventoryContent
           key={paramsStr}
           initialData={transactions}
@@ -129,10 +129,10 @@ export default function InventoryPage(props: PageProps) {
       fallback={
         <>
           <Header title="Kho hàng" description="Đang tải dữ liệu..." />
-          <div className="flex-1 p-6 space-y-4">
-            <div className="animate-pulse space-y-4">
-              <div className="h-10 bg-muted rounded-xl w-full" />
-              <div className="h-[400px] bg-muted rounded-xl w-full" />
+          <div className="flex-1 p-6 flex flex-col overflow-hidden">
+            <div className="animate-pulse flex flex-col gap-4">
+              <div className="h-10 bg-muted rounded-xl w-full shrink-0" />
+              <div className="flex-1 bg-muted rounded-xl w-full" />
             </div>
           </div>
         </>

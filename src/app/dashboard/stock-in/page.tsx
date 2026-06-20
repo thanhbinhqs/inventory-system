@@ -8,9 +8,9 @@ export default function StockInPage() {
       fallback={
         <>
           <Header title="Nhập kho" description="Đang tải dữ liệu..." />
-          <div className="flex-1 p-6 space-y-4">
-            <div className="animate-pulse">
-              <div className="h-12 bg-muted rounded-xl w-full" />
+          <div className="flex-1 p-6 flex flex-col overflow-hidden">
+            <div className="animate-pulse flex flex-col gap-4">
+              <div className="h-12 bg-muted rounded-xl w-full shrink-0" />
             </div>
           </div>
         </>
@@ -28,7 +28,7 @@ async function StockInPageInner() {
         title="Nhập kho"
         description="Tìm kiếm sản phẩm và nhập số lượng để thêm hàng vào kho"
       />
-      <div className="flex-1 p-6 space-y-4">
+      <div className="flex-1 p-6 flex flex-col overflow-hidden">
         <StockInContent />
       </div>
     </>

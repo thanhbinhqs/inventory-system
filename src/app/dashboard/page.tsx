@@ -400,17 +400,17 @@ async function MonthlyReportTable({ from, to }: { from: Date; to: Date }) {
   const data = await getReportData(from, to);
 
   return (
-    <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-      <CardHeader>
+    <Card className="border-slate-200 dark:border-slate-800 shadow-sm flex flex-col">
+      <CardHeader className="flex-shrink-0">
         <CardTitle className="text-lg font-semibold flex items-center gap-2">
           <BarChart3 className="w-5 h-5 text-primary" />
           Báo cáo theo tháng
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="overflow-x-auto">
+      <CardContent className="flex-1 min-h-0 p-0 overflow-hidden">
+        <div className="h-full overflow-auto">
           <table className="w-full text-sm">
-            <thead>
+            <thead className="sticky top-0 z-10 bg-card">
               <tr className="border-b border-slate-200 dark:border-slate-800">
                 <th className="text-left py-3 px-4 font-medium text-muted-foreground">
                   Tháng
@@ -482,17 +482,17 @@ async function TopProductsTable({ from, to }: { from: Date; to: Date }) {
   const data = await getReportData(from, to);
 
   return (
-    <Card className="border-slate-200 dark:border-slate-800 shadow-sm">
-      <CardHeader>
+    <Card className="border-slate-200 dark:border-slate-800 shadow-sm flex flex-col">
+      <CardHeader className="flex-shrink-0">
         <CardTitle className="text-lg font-semibold flex items-center gap-2">
           <Crown className="w-5 h-5 text-amber-500" />
           Sản phẩm bán chạy
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="overflow-x-auto">
+      <CardContent className="flex-1 min-h-0 p-0 overflow-hidden">
+        <div className="h-full overflow-auto">
           <table className="w-full text-sm">
-            <thead>
+            <thead className="sticky top-0 z-10 bg-card">
               <tr className="border-b border-slate-200 dark:border-slate-800">
                 <th className="text-left py-3 px-4 font-medium text-muted-foreground">
                   #
@@ -578,7 +578,7 @@ export default async function DashboardPage(props: {
         title="Tổng quan"
         description="Bảng điều khiển quản lý kho hàng và dòng tiền"
       />
-      <div className="flex-1 p-6 space-y-6">
+      <div className="flex-1 p-6 overflow-y-auto space-y-6">
         {/* KPI Cards */}
         <Suspense
           fallback={
