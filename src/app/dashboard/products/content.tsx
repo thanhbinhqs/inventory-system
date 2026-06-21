@@ -17,7 +17,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -28,14 +27,13 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState, useMemo, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import {
   Search,
   Package,
@@ -54,6 +52,8 @@ import {
   Loader2,
   TrendingUp,
   TrendingDown,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import {
   createProduct,
@@ -65,6 +65,9 @@ import { toast } from "sonner";
 
 interface ProductsContentProps {
   products: Product[];
+  total: number;
+  currentPage: number;
+  totalPages: number;
 }
 
 function EmptyState() {
@@ -88,6 +91,7 @@ function ProductFormDialog({
 }) {
   const [pending, startTransition] = useTransition();
   const isEdit = !!product;
+  const router = useRouter();
 
   async function handleSubmit(formData: FormData) {
     startTransition(async () => {
@@ -98,6 +102,7 @@ function ProductFormDialog({
         else {
           toast.success("Cập nhật sản phẩm thành công!");
           onOpenChange(false);
+          router.refresh();
         }
       } else {
         const result = await createProduct(formData);
@@ -105,6 +110,7 @@ function ProductFormDialog({
         else {
           toast.success("Thêm sản phẩm thành công!");
           onOpenChange(false);
+          router.refresh();
         }
       }
     });
@@ -193,7 +199,7 @@ function ProductFormDialog({
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground font-semibold">
               <DollarSign className="w-3.5 h-3.5" />
-              Giá &amp; Tồn kho
+              Giá & Tồn kho
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -283,7 +289,62 @@ function ProductFormDialog({
   );
 }
 
-export function ProductsContent({ products }: ProductsContentProps) {
+// ---------- Pagination ----------
+function Pagination({
+  currentPage,
+  totalPages,
+}: {
+  currentPage: number;
+  totalPages: number;
+}) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const goTo = (page: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", String(page));
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  if (totalPages <= 1) return null;
+
+  return (
+    <div className="flex items-center justify-between gap-2 flex-shrink-0">
+      <Button
+        variant="outline"
+        size="sm"
+        disabled={currentPage <= 1}
+        onClick={() => goTo(currentPage - 1)}
+        className="gap-1"
+      >
+        <ChevronLeft className="w-4 h-4" />
+        Trước
+      </Button>
+      <div className="flex items-center gap-1 text-sm text-muted-foreground">
+        Trang {currentPage} / {totalPages}
+      </div>
+      <Button
+        variant="outline"
+        size="sm"
+        disabled={currentPage >= totalPages}
+        onClick={() => goTo(currentPage + 1)}
+        className="gap-1"
+      >
+        Sau
+        <ChevronRight className="w-4 h-4" />
+      </Button>
+    </div>
+  );
+}
+
+// ---------- Main Content ----------
+export function ProductsContent({
+  products,
+  total,
+  currentPage,
+  totalPages,
+}: ProductsContentProps) {
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [editProduct, setEditProduct] = useState<Product | null>(null);
@@ -308,6 +369,7 @@ export function ProductsContent({ products }: ProductsContentProps) {
       else {
         toast.success("Đã xóa sản phẩm");
         setDeleteTarget(null);
+        router.refresh();
       }
     });
   }
@@ -319,7 +381,7 @@ export function ProductsContent({ products }: ProductsContentProps) {
         <div className="relative max-w-sm flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
-            placeholder="Tìm sản phẩm..."
+            placeholder="Tìm sản phẩm trong trang..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9"
@@ -354,7 +416,7 @@ export function ProductsContent({ products }: ProductsContentProps) {
                   {filtered.map((product, i) => (
                     <TableRow key={product.id}>
                       <TableCell className="text-muted-foreground text-sm">
-                        {i + 1}
+                        {(currentPage - 1) * 25 + i + 1}
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline" className="font-mono text-xs">
@@ -414,9 +476,14 @@ export function ProductsContent({ products }: ProductsContentProps) {
             </div>
           </div>
 
-          <p className="text-sm text-muted-foreground flex-shrink-0">
-            Tổng số: {filtered.length} / {products.length} sản phẩm
-          </p>
+          <div className="flex items-center justify-between flex-shrink-0">
+            <p className="text-sm text-muted-foreground">
+              {search
+                ? `${filtered.length} / ${products.length} sản phẩm (trang ${currentPage})`
+                : `Tổng số: ${total} sản phẩm — trang ${currentPage}/${totalPages}`}
+            </p>
+            <Pagination currentPage={currentPage} totalPages={totalPages} />
+          </div>
         </>
       )}
 

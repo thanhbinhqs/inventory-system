@@ -165,7 +165,7 @@ export function StockInContent() {
       setProductDetail(detail as ProductDetail);
       // Ưu tiên giá nhập lần cuối
       if (detail.last_import_price) {
-        setPrice(detail.last_import_price);
+        setPrice(Math.round(detail.last_import_price));
       }
     }
 
@@ -407,7 +407,7 @@ export function StockInContent() {
           </DialogHeader>
 
           {selected && (
-            <form action={handleSubmit}>
+            <form action={handleSubmit} noValidate>
               <input type="hidden" name="product_id" value={selected.id} />
 
               {/* ======== PRODUCT INFO CARD ======== */}
@@ -542,7 +542,7 @@ export function StockInContent() {
                       name="price"
                       type="number"
                       min="0"
-                      step="1000"
+                      step="1"
                       required
                       value={price}
                       onChange={(e) => setPrice(parseFloat(e.target.value) || 0)}

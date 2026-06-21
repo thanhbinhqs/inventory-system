@@ -3,17 +3,36 @@ import { createClient } from "@/lib/supabase/server";
 import { Header } from "@/components/header";
 import { ProductsContent } from "./content";
 
-async function getProducts() {
+const PAGE_SIZE = 25;
+
+async function getProducts(searchParams: Promise<{ [key: string]: string | string[] | undefined }>) {
+  const params = await searchParams;
   const supabase = await createClient();
-  const { data } = await supabase
+
+  const page = Math.max(1, parseInt(params?.page as string) || 1);
+  const from = (page - 1) * PAGE_SIZE;
+  const to = from + PAGE_SIZE - 1;
+
+  const { data, count } = await supabase
     .from("products")
-    .select("*")
-    .order("name");
-  return data ?? [];
+    .select("*", { count: "exact" })
+    .order("name")
+    .range(from, to);
+
+  return {
+    products: data ?? [],
+    total: count ?? 0,
+    page,
+    totalPages: Math.ceil((count ?? 0) / PAGE_SIZE),
+  };
 }
 
-async function ProductsTable() {
-  const products = await getProducts();
+async function ProductsTable({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const { products, total, page, totalPages } = await getProducts(searchParams);
 
   return (
     <>
@@ -22,13 +41,22 @@ async function ProductsTable() {
         description="Quản lý sản phẩm: thêm, sửa, xóa, nhập kho"
       />
       <div className="flex-1 p-6 flex flex-col overflow-hidden">
-        <ProductsContent products={products} />
+        <ProductsContent
+          products={products}
+          total={total}
+          currentPage={page}
+          totalPages={totalPages}
+        />
       </div>
     </>
   );
 }
 
-export default function ProductsPage() {
+export default async function ProductsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   return (
     <Suspense
       fallback={
@@ -43,7 +71,7 @@ export default function ProductsPage() {
         </>
       }
     >
-      <ProductsTable />
+      <ProductsTable searchParams={searchParams} />
     </Suspense>
   );
 }
